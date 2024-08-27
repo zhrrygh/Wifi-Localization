@@ -9,6 +9,7 @@ import math
 from tqdm import tqdm
 import warnings
 import matplotlib.pyplot as pp
+
 pd.options.mode.chained_assignment = None
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -17,8 +18,8 @@ if __name__ == '__main__':
     antenna_distance = 0.15
     frequency = 2.412 * pow(10, 9)
     sub_freq_delta = 3125
-    theta_range = np.linspace(-90,90,91)
-    tau_range = np.linspace(0,3000 * pow(10,-9),61)
+    theta_range = np.linspace(-90, 90, 91)
+    tau_range = np.linspace(0, 3000 * pow(10, -9), 61)
 
     result_aoas = np.array([0.0])
 
@@ -29,7 +30,7 @@ if __name__ == '__main__':
 
     all_maximum_idx_array = np.zeros(2)
     for i in tqdm(range(file_data.shape[0])):
-    #for i in tqdm(range(20)):
+        # for i in tqdm(range(20)):
         csi_entry = file_data.loc[i]
         csi = load_csi_data.get_scale_csi(csi_entry)
         # run algorithm 1 for the first package
@@ -43,7 +44,8 @@ if __name__ == '__main__':
 
     candicate_aoa_tof = np.zeros(2)
     for i in range(all_maximum_idx_array.shape[0]):
-        c_candicate = np.array((theta_range[int(all_maximum_idx_array[i, 0])], tau_range[int(all_maximum_idx_array[i, 1])]))
+        c_candicate = np.array(
+            (theta_range[int(all_maximum_idx_array[i, 0])], tau_range[int(all_maximum_idx_array[i, 1])]))
         candicate_aoa_tof = np.vstack((candicate_aoa_tof, c_candicate))
     candicate_aoa_tof = candicate_aoa_tof[1:, ]
 
@@ -70,13 +72,13 @@ if __name__ == '__main__':
         data_likelihood.loc[i - 1, 'cluster'] = i
         data_likelihood.loc[i - 1, 'cnt'] = sum(raw_package_results['cluster'] == i)
         data_likelihood.loc[i - 1, 'aoa_mean'] = (
-        raw_package_results['aoa'][raw_package_results['cluster'] == i]).mean()
+            raw_package_results['aoa'][raw_package_results['cluster'] == i]).mean()
         data_likelihood.loc[i - 1, 'tof_mean'] = (
-        raw_package_results['tof'][raw_package_results['cluster'] == i]).mean()
+            raw_package_results['tof'][raw_package_results['cluster'] == i]).mean()
         data_likelihood.loc[i - 1, 'aoa_variance'] = (
-        raw_package_results['aoa'][raw_package_results['cluster'] == i]).var()
+            raw_package_results['aoa'][raw_package_results['cluster'] == i]).var()
         data_likelihood.loc[i - 1, 'tof_variance'] = (
-        raw_package_results['tof'][raw_package_results['cluster'] == i]).var()
+            raw_package_results['tof'][raw_package_results['cluster'] == i]).var()
 
     weight_num_cluster_points = 0.01
     weight_aoa_variance = -0.004
@@ -94,4 +96,4 @@ if __name__ == '__main__':
     data_likelihood['likelihood'][data_likelihood['aoa_mean'] == -90] = 0
     data_likelihood['likelihood'][data_likelihood['aoa_mean'] == 90] = 0
 
-    print (data_likelihood)
+    print(data_likelihood)
